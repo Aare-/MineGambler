@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Minesweeper Gold - Gambling Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Animation keyframes and custom styles */
+      .tile {
+        transition: all 0.2s ease;
+      }
+      
+      .tile:hover:not(.revealed):not(.disabled) {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      }
+      
+      .tile.revealed {
+        transform: rotateY(180deg);
+      }
+      
+      .animate-reveal {
+        animation: reveal 0.3s ease-out forwards;
+      }
+      
+      @keyframes reveal {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      
+      .animate-explode {
+        animation: explode 0.5s ease-out forwards;
+      }
+      
+      @keyframes explode {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); background-color: #DC2626; }
+        100% { transform: scale(1); background-color: #DC2626; }
+      }
+      
+      .shine {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .shine::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: rotate(30deg);
+        animation: shine 3s infinite linear;
+      }
+      
+      @keyframes shine {
+        0% { transform: translateX(-100%) rotate(30deg); }
+        100% { transform: translateX(100%) rotate(30deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
