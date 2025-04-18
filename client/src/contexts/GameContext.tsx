@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { GameState, gameConfig, GameStats } from '@shared/schema';
 import { generateMinePositions, calculateMultiplier } from '@/lib/gameUtils';
-import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
 interface GameContextType {
@@ -30,7 +29,8 @@ const initialGameState: GameState = {
   revealedPositions: [],
   gameActive: false,
   currentMultiplier: 1.00,
-  stats: defaultStats
+  stats: defaultStats,
+  gameMode: 'setup'
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -38,6 +38,38 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const handleMessage = (event: any) => {
+      if (event.data?.type === 'INITIAL_BALANCE') {
+        const parsedNumber = Number(event.data.value);
+
+        if (!isNaN(parsedNumber) && parsedNumber > 0) {
+          setGameState(prev => ({ ...prev, balance: parsedNumber }));
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Monitor game state to determine which stage to show
+  useEffect(() => {
+    if (!gameState.gameActive && gameState.revealedPositions.length === 0) {
+      setGameState(prev => ({ ...prev, gameMode: 'setup' }));
+    } else if (gameState.gameActive) {
+      setGameState(prev => ({ ...prev, gameMode: 'playing' }));
+    } else if (!gameState.gameActive && gameState.revealedPositions.length > 0) {
+      setGameState(prev => ({ ...prev, gameMode: 'result' }));
+    }
+  }, [gameState.gameActive, gameState.revealedPositions.length]);
+
+  useEffect(() => {
+    //TODO: send updated message about coins balance
+
+  }, [gameState.balance]);
 
   const formatNumber = (num: number): string => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -106,9 +138,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         gameActive: false,
         stats: newStats
       }));
-      
-      // Save stats to server
-      saveStats(newStats);
+
     } else {
       // Safe tile - calculate new multiplier
       const newMultiplier = calculateMultiplier(
@@ -147,9 +177,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       gameActive: false,
       stats: newStats
     }));
-    
-    // Save stats to server
-    saveStats(newStats);
+
   };
 
   const resetGame = () => {
@@ -161,38 +189,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       gameActive: false
     }));
   };
-
-  const saveStats = async (stats: GameStats) => {
-    try {
-      await apiRequest('POST', '/api/stats', { 
-        balance: gameState.balance,
-        stats 
-      });
-    } catch (error) {
-      console.error('Failed to save stats:', error);
-    }
-  };
-
-  // Load initial stats from server
-  useEffect(() => {
-    const loadStats = async () => {
-      try {
-        const response = await fetch('/api/stats');
-        if (response.ok) {
-          const data = await response.json();
-          setGameState(prev => ({
-            ...prev,
-            balance: data.balance || gameConfig.startingBalance,
-            stats: data.stats || defaultStats
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to load stats:', error);
-      }
-    };
-
-    loadStats();
-  }, []);
 
   return (
     <GameContext.Provider value={{ 

@@ -28,6 +28,11 @@ const GameSetup: React.FC = () => {
   return (
     <div className="p-6 border-b border-gray-700">
       <div className="mb-6">
+        <div className="mr-4">
+          <p className="text-gray-400 text-sm">BALANCE</p>
+          <p className="text-2xl font-bold text-amber-500 shine">{formatNumber(gameState.balance)}</p>
+        </div>
+
         <label htmlFor="wager-input" className="block mb-2 text-sm font-medium text-gray-300">
           Wager Amount
         </label>
@@ -98,13 +103,6 @@ const GameSetup: React.FC = () => {
           <p className="text-sm text-gray-400">Higher risk, higher reward</p>
           <p className="text-xs text-gray-500">More mines = higher multiplier per safe tile</p>
         </div>
-        <Button
-          onClick={startGame}
-          disabled={gameState.wager > gameState.balance || gameState.wager < 1}
-          className="px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white font-medium shadow-lg shadow-purple-700/20"
-        >
-          Start Game
-        </Button>
       </div>
     </div>
   );

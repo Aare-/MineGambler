@@ -36,27 +36,13 @@ const GameResult: React.FC = () => {
         </svg>
       );
     } else {
-      return <span className="text-sm">SAFE</span>;
+      return <span className="text-xs">SAFE</span>;
     }
   };
   
   return (
-    <div className="p-6">
-      <div className="text-center mb-6">
-        <h2 className={`text-2xl font-bold mb-2 ${isWin ? 'text-emerald-500' : 'text-red-500'}`}>
-          {isWin ? 'You Won!' : 'You Lost!'}
-        </h2>
-        <p className="text-gray-300">
-          {isWin 
-            ? `You found ${gameState.revealedPositions.length} safe tiles and won`
-            : 'You hit a mine and lost your wager'}
-        </p>
-        <p className={`text-3xl font-bold mt-2 ${isWin ? 'text-amber-500' : 'text-red-500'}`}>
-          {netWin > 0 ? '+' : ''}{formatNumber(netWin)}
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-5 gap-2 max-w-md mx-auto mb-6">
+    <div className="relative">
+      <div className="grid grid-cols-5 gap-2 max-w-72 mx-auto p-0">
         {Array.from({ length: 25 }).map((_, index) => (
           <div
             key={index}
@@ -66,14 +52,21 @@ const GameResult: React.FC = () => {
           </div>
         ))}
       </div>
-      
-      <div className="flex justify-center">
-        <Button
-          onClick={resetGame}
-          className="px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white font-medium shadow-lg shadow-purple-700/20"
-        >
-          Play Again
-        </Button>
+
+      <div className="absolute inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center">
+        <div className="text-center mb-6">
+          <h2 className={`text-2xl font-bold mb-2 ${isWin ? 'text-emerald-500' : 'text-red-500'}`}>
+            {isWin ? 'You Won!' : 'You Lost!'}
+          </h2>
+          <p className="text-gray-300">
+            {isWin
+                ? `You found ${gameState.revealedPositions.length} safe tiles and won`
+                : 'You hit a mine and lost your wager'}
+          </p>
+          <p className={`text-3xl font-bold mt-2 ${isWin ? 'text-amber-500' : 'text-red-500'}`}>
+            {netWin > 0 ? '+' : ''}{formatNumber(netWin)}
+          </p>
+        </div>
       </div>
     </div>
   );

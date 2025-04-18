@@ -1,4 +1,6 @@
 // Generate random mine positions
+import {useEffect, useState} from "react";
+
 export function generateMinePositions(mineCount: number, gridSize: number): number[] {
   const totalTiles = gridSize * gridSize;
   const minePositions: number[] = [];

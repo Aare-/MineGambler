@@ -1,17 +1,19 @@
 import React from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { Button } from '@/components/ui/button';
+import {calculateMultiplier} from "@/lib/gameUtils.ts";
+import {gameConfig} from "@shared/schema.ts";
 
 const GameBoard: React.FC = () => {
   const { gameState, revealTile, cashOut } = useGame();
   
   // Generate tile class based on state
   const getTileClass = (position: number) => {
-    let baseClass = "tile aspect-square flex items-center justify-center rounded-lg shadow transition-all";
+    let baseClass = "w-full h-full flex justify-center items-center border border-gray-500 tile aspect-square rounded-lg shadow transition-all";
     
     // Tile not yet clicked
     if (!gameState.revealedPositions.includes(position)) {
-      return `${baseClass} bg-slate-100 hover:bg-slate-200 text-gray-800 cursor-pointer`;
+      return `${baseClass} bg-slate-100 bg-gray-300 hover:bg-slate-200 text-gray-800 cursor-pointer`;
     }
     
     // Tile is revealed
@@ -19,7 +21,7 @@ const GameBoard: React.FC = () => {
     if (isMine) {
       return `${baseClass} revealed animate-explode bg-red-500 text-white`;
     } else {
-      return `${baseClass} revealed animate-reveal bg-emerald-500 text-white`;
+      return `${baseClass} revealed animate-reveal bg-emerald-200 text-white`;
     }
   };
   
@@ -39,42 +41,30 @@ const GameBoard: React.FC = () => {
       // For safe tiles, we'll show the increment to the multiplier
       const revealIndex = gameState.revealedPositions.indexOf(position);
       const prevCount = revealIndex > 0 ? revealIndex : 0;
-      
+      const multiplierIncrease: number =
+          calculateMultiplier(revealIndex + 1, gameState.mines, gameConfig.gridSize) -
+          calculateMultiplier(prevCount, gameState.mines, gameConfig.gridSize);
+      const formattedNumber = multiplierIncrease.toFixed(2);
+
       // We need to calculate what this specific tile added to the multiplier
-      const tileMultiplier = "+0.00×"; // Default
+      const tileMultiplier = `+${formattedNumber}×`; // Default
       
-      return <span className="font-bold">{tileMultiplier}</span>;
+      return <span className="font-bold text-xs text-emerald-500">{tileMultiplier}</span>;
     }
   };
   
   return (
-    <div className="p-4 md:p-6">
-      <div className="grid grid-cols-5 gap-2 md:gap-3 max-w-md mx-auto">
+      <div className="grid grid-cols-5 gap-2 max-w-72 mx-auto p-0">
         {Array.from({ length: 25 }).map((_, index) => (
-          <div
-            key={index}
-            className={getTileClass(index)}
-            onClick={() => revealTile(index)}
-          >
-            {renderTileContent(index)}
-          </div>
+            <div
+                key={index}
+                className={getTileClass(index)}
+                onClick={() => revealTile(index)}
+            >
+              {renderTileContent(index)}
+            </div>
         ))}
       </div>
-      
-      <div className="flex justify-center mt-6">
-        <Button
-          onClick={cashOut}
-          disabled={!gameState.gameActive || gameState.revealedPositions.length === 0}
-          className={`px-8 py-3 font-bold text-lg transition-all ${
-            gameState.gameActive && gameState.revealedPositions.length > 0
-              ? "bg-emerald-500 hover:bg-emerald-600 animate-pulse shadow-lg shadow-emerald-500/20"
-              : "bg-emerald-500/50"
-          }`}
-        >
-          CASH OUT
-        </Button>
-      </div>
-    </div>
   );
 };
 

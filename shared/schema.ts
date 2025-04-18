@@ -22,6 +22,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type GameMode = 'setup' | 'playing' | 'result';
 
 // Game specific types
 export interface GameStats {
@@ -40,11 +41,12 @@ export interface GameState {
   gameActive: boolean;
   currentMultiplier: number;
   stats: GameStats;
+  gameMode: GameMode;
 }
 
 export const gameConfig = {
   gridSize: 5,
-  startingBalance: 1000000,
+  startingBalance: 666,
   maxWager: 1000000,
   minWager: 1
 };
