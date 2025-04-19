@@ -40,19 +40,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { toast } = useToast();
 
   useEffect(() => {
-    const handleMessage = (event: any) => {
-      if (event.data?.type === 'INITIAL_BALANCE') {
-        const parsedNumber = Number(event.data.value);
-
-        if (!isNaN(parsedNumber) && parsedNumber > 0) {
-          setGameState(prev => ({ ...prev, balance: parsedNumber }));
-        }
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-
-    return () => window.removeEventListener('message', handleMessage);
+    setGameState(prev => ({ ...prev, balance: window.initialBalance ?? 404 }));
   }, []);
 
   // Monitor game state to determine which stage to show
@@ -67,8 +55,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [gameState.gameActive, gameState.revealedPositions.length]);
 
   useEffect(() => {
-    //TODO: send updated message about coins balance
-
+      window.ReactNativeWebView?.postMessage(JSON.stringify(gameState.balance));
   }, [gameState.balance]);
 
   const formatNumber = (num: number): string => {

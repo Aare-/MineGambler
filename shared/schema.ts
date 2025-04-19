@@ -46,7 +46,7 @@ export interface GameState {
 
 export const gameConfig = {
   gridSize: 5,
-  startingBalance: 666,
+  startingBalance: 0,
   maxWager: 1000000,
   minWager: 1
 };

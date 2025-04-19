@@ -24,14 +24,18 @@ const GameSetup: React.FC = () => {
   const handleMinesChange = (values: number[]) => {
     setMines(values[0]);
   };
-  
-  return (
-    <div className="p-6 border-b border-gray-700">
-      <div className="mb-6">
+
+  /*
         <div className="mr-4">
           <p className="text-gray-400 text-sm">BALANCE</p>
           <p className="text-2xl font-bold text-amber-500 shine">{formatNumber(gameState.balance)}</p>
         </div>
+   */
+
+  return (
+    <div className="p-6 border-b border-gray-700">
+      <div className="mb-6">
+
 
         <label htmlFor="wager-input" className="block mb-2 text-sm font-medium text-gray-300">
           Wager Amount
